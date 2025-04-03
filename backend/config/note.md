@@ -1,0 +1,6 @@
+- configディレクトリ
+    - environmentsディレクトリ
+    - initializersディレクトリ
+    - localesディレクトリ
+    - applicationファイル
+    - bootファイル
