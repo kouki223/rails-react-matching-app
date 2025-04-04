@@ -21,3 +21,4 @@ Rails + React + Material-UIで作ったマッチングアプリ。
             - Node.js
     - ライブラリ
         - Material-UI
+        - axios
