@@ -5,3 +5,19 @@
 Rails + React + Material-UIで作ったマッチングアプリ。
 
 詳細はQiitaにて記載。（https://qiita.com/kazama1209/items/7e6a0348e00287e9515b）
+
+- 技術の構成
+    - FE
+        - React + TypeScript
+    - BE
+        - Ruby3
+        - Rails6(APIモード)
+            - devise_token_auth
+        - MySQL8
+    - インフラ
+        - サーバーインフラ
+            - Doker
+        - ネットワークインフラ
+            - Node.js
+    - ライブラリ
+        - Material-UI

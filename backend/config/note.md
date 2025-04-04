@@ -1,6 +1,17 @@
 - configディレクトリ
     - environmentsディレクトリ
+        - Rails特有の固有環境の設定を記載するファイル
     - initializersディレクトリ
+        - フレームワークやGemが読み込まれた後に実行するコードを格納するディレクトリ
     - localesディレクトリ
+        - 頻回に使用する言語などを定義するファイル
     - applicationファイル
+        - Railsコンポーネントを初期化するファイル
     - bootファイル
+    - cableファイル
+    - databaseファイル
+    - environmentファイル
+    - pumaファイル
+    - routesファイル
+        - ルーティングを記載するファイル
+    - springファイル

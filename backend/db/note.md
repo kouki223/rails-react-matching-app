@@ -1,0 +1,10 @@
+- db
+    - fixture/users
+        - usersを登録する場合に使う画像を格納する
+    - migrate
+        - migrateファイルを格納する場所
+    - schema
+        - DBへの変更スキーマーを記録するファイル
+    - seeds
+        - 種という意味のseed
+            - DB構造などの開発段階での初期設定
