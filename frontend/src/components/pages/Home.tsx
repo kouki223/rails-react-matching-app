@@ -63,7 +63,7 @@ const Home: React.FC = () => {
   const { isSignedIn, setIsSignedIn, currentUser, setCurrentUser } = useContext(AuthContext)
 
   const classes = useStyles()
-  const histroy = useHistory()
+  const history = useHistory()
 
   const [editFormOpen, setEditFormOpen] = useState<boolean>(false)
   const [name, setName] = useState<string | undefined>(currentUser?.name)
@@ -146,7 +146,7 @@ const Home: React.FC = () => {
         Cookies.remove("_uid")
 
         setIsSignedIn(false)
-        histroy.push("/signin")
+        history.push("/signin")
 
         console.log("Succeeded in sign out")
       } else {
