@@ -1,5 +1,5 @@
 import client from "lib/api/client"
-import { UpdateUserFormData} from "interfaces/index"
+import { UpdateUserFormData } from "interfaces/index"
 
 import Cookies from "js-cookie"
 
