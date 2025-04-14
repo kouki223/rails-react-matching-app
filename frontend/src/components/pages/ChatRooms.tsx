@@ -81,7 +81,7 @@ const ChatRooms: React.FC = () => {
                                   variant="body2"
                                   color="textSecondary"
                                 >
-                                  {chatRoom.lastMessage === null ? "まだメッセージはありません。" : chatRoom.lastMessage.content.length > 30 ? chatRoom.lastMessage.content.substr(0, 30) + "..." : chatRoom.lastMessage.content}
+                                  {chatRoom.lastMessage === null ? "まだメッセージはありません。" : chatRoom.lastMessage.content.length > 30 ? chatRoom.lastMessage.content.substring(0, 30) + "..." : chatRoom.lastMessage.content}
                                 </Typography>
                               </div>
                             }
