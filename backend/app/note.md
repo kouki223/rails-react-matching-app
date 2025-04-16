@@ -1,14 +1,134 @@
 - appディレクトリ
     - channelsディレクトリ
         - WebSocketとRailsのその他の部分を結合する
+            - channel.rb
+                - ActionCable::Channel::Baseを継承したChannelクラスがApplicationCableモジュールとして定義されているファイル
+            - connection.rb
+                - ActionCable::Connection::Baseを継承したConnectionクラスがApplicationCableモジュールとして定義されているファイル
     - controllersディレクトリ
         - conttollesの格納されているファイル
+            - api/v1ディレクトリ
+                - authディレクトリ
+                    - registrations_controller.rb => アカウント作成用のコントローラー
+                        - DeviseTokenAuthのRegistrationsControllerを継承したApi::V1::Auth::RegistrationsController
+                            - privateにラップされたsign_up_paramsアクション
+                                - ストロングパラメーターでフロント側からの値を変数paramsを介して受け取る
+                    - sessions_controller.rb => 認証用のコントローラー
+                        - ApplicationControllerを継承したApi::V1::Auth::SessionsController
+                            - indexアクション
+                                - current_api_v1_user => current_userというヘルパーメソッド　=> ユーザーがログインしているかしていないか判別する
+                                    - trueの場合
+                                        - json形式でstatus: 200とcurrent_user: current_api_v1_userを返す
+                                    - faleの場合
+                                        - json形式でstatus: 500とmessageにユーザーが存在しませんを格納して返す
+                - chat_rooms_controller.rb
+                    - indexアクション
+                        - chat_roomsに空の配列を代入して配列の初期化を行う
+                            - current_api_v1_user.chat_rooms.order("created_at DESC").each
+                                - ヘルパーメソッドを使ってログインしてるユーザーのデータを配列に代入して降順で並び変えて繰り返し処理を行い変数chat_roomへ要素を代入する
+                            - chat_rooms
+                                - 各要素を格納する
+                        - renderメソッドでjson形式で status: 200, chat_rooms: chat_rooms を返す
+                    - showアクション
+                        - ローカル変数のother_userを定義する
+                            - before_actionで定義しtた@chat_roomにusersプロパティに対してwhereメソッドのnotで否定した条件をかける(条件はidカラムがcurrent_userのidカラムになている)インデックス番号は1番最初を示す0を指定する
+                        - ローカル変数のmessagesを定義する
+                            - before_actionで定義しtた@chat_roomのmessagesプロパティに対してorderメソッドを実行する。条件はcreated_atカラムを昇順で表示する
+                                - render
+                                    - 各データを格納してjson形式で値を返す
+                - likes_controller.rb
+                    - index
+                        - render
+                            - active_like
+                            - passive_like
+                                - それぞれのcurrent_userプロパティから取得してjson形式で値を返す
+                    - createアクション
+                        - is_matched
+                            - false => 初期値・フラグの役割を持つ
+                        - active_like   
+                            - find_or_initialize_by
+                                - 条件を指定して初めの一件を取得
+                                - 0の場合には生成する
+                        - passsive_like
+                            - from_user_idのカラムにはactive_like.to_user_id
+                            - to_user_id: active_like.from_user_id
+                        - if分
+                            - いいねを押した際、相手からのいいねがすでに存在する場合はマッチング成立にする　＝＞　マッチングルームを作成する
+                            - is_matchedにtrueを渡す
+                    - like_params
+                - messages_controller
+                    - createアクション
+                        - ローカル変数のmessageを定義する
+                            - Messageモデルにnewメソッドを使い引数をmessage_params(リクエストパラメーター)として受け取りインスタンスを生成する
+                        - if文
+                            - 生成した変数massageに対してsaveメソッドを使いDBへ保存する
+                                - trueの場合には
+                                    - statusとmessageを格納しjson形式にして返す
+                                - falseの場合には
+                                    - statusには500をmessageには"作成に失敗しました"を格納しjson形式にして返す
+                    - private => 他のクラスからのアクセスをブロックする
+                        - message_paramsアクション
+                            - 特殊な変数params(リクエストパラメーター)にpermit(ストロングパラメーター)受け取るカラムに制限をつける(:chat_room_id, :user_id, :content)
+                - test_controller.rb
+                    - indexアクション
+                        - statusには200をmessageプロパティには"Hello World!"を格納してjson形式で返す
+                - users_controller.rb
+                    - before_action => アクションが実行される前にonlyで指定したアクションが実行される前にアクションを行う
+                        - set_user
+                            - only
+                                - show
+                                - update
+                    - index
+                        - ローカル変数のusersにUserモデルのwhereメソッドを使って自分以外のユーザーを取得する
+                            - 1つ目の条件がprefectureカラムがログイン中のユーザーのprefectureカラムかどうか？
+                            - where.notでidカラムとgenderカラムが違う
+                            - それらをorderメソッドを降順で実行する
+                        - statusプロパティに200usersプロパティにusersを格納してjson形式で返す 
+                    - show
+                        - before_actionのset_userを実行する
+                            - @userとstatusコードに200を格納してjson形式にして返す
+                    - update
+                        - @user.name
+                            - user_paramsのnameプロパティを代入する
+                        - @user.prefecture
+                            - user_paramsのprefectureプロパティを代入する
+                        - @user.profile
+                            - user_paramsのprefectureプロパティを代入する
+                        - @user.image
+                            - user_paramsのimageプロパティを代入する
+                    - private
+                        - set_user
+                            - @userに対してfind関数の条件にリクエストパラメーターのidプロパティと一致するidのレコードを代入する
+                        - user_params
+                            - 特殊な変数paramsの各プロパティをストロングパラメーターとして受け取るパラメーターを制限する
+            - application_controller.rb
+                - ActionController::Baseを継承したApplicationControllerクラス
+                    - DeviseTokenAuth::Concerns::SetUserByTokenをincludeする
+                    - skip_before_action => フィルター処理を行わないようにする
+                        - verify_authenticity_token　＝＞　CSRF 対策の放棄
+                    - helper_methodの定義
+                        - current_user => current_api_v1 => ログインしているユーザーか？
+                        - user_signed_in？
     - jobsディレクトリ
         - キューイングバックエンドで行うために設計されたフレームワーク
+            - バックグラウンドで実行する
+                - ジョブの作成
+                - キュー登録（エンキュー: enqueue）
     - mailersディレクトリ
         - アプリケーションからメールを送信するためのコンポーネント
+            - defaultのメールアドレスをfromで指定する
+                - from@example.com
     - modelsディレクトリ
         - modelが格納されているディレクトリ
+            - ApplicationRecordモデル
+                - ApplicationRecordはORMとしてDBへのマッピングを
+                - self.abstract_class = true
+                    - 対応するテーブルが
+            - ChatRoomUserモデル
+            - ChatRoomモデル
+            - Likeモデル
+            - messageモデル
+            - userモデル
     - uploadersディレクトリ
         - 画像をアップロードする機能を実装する
     - viewsディレクトリ
