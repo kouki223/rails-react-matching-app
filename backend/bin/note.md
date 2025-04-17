@@ -1,11 +1,70 @@
 - binディレクトリ
     - bundleファイル
         - Gemファイルで使う事ができるGemfileに基づいてrailsコマンドなどを実行できるようにするコマンド
+            - !/usr/bin/env ruby
+                - ファイルパスを示す
+        - require "rubygems"
+            - Gemをリクエストする
+        - モジュール領域で囲まれた
+            - module_function => メソッドをモジュール関数にしてくれる
+            - invoked_as_script?
+                - scriptファイルを呼び出すメソッド
+            - env_var_version
+                - ENV["BUNDLER_VERSION"]
+                    - 環境変数をBUDLERのバージョンに指定する
+            - cli_arg_version   
+                - 引数のバージョンを定義する
+            - gemfile
+                - 環境変数を定義する
+                    - BUNDLEのGEMを使うように定義する
+                        - 後置if文
+                            - gemfile && !gemfile.empty?
+                                - gemfileを返す
+            - lockfile
+                - 変数lockfileを定義する
+                    - 定義したファイルを引数に受け取り相対パスにしてファイルを作成する
+            - lockfile_version
+            - bundler_version
+                - @bundler_versionは
+                    - env_var_version
+                    - cli_arg_version
+                    - lockfile_version
+                        - この3つが揃った値
+            - bundler_requirement
+                - return requirement unless Gem::Version.new(Gem::VERSION) < Gem::Version.new("2.7.0")
+                    - バンドラーのバージョンを指定して呼び出す
+            - load_bundler!
+                - 自己代入
+                    - ENV["BUNDLE_GEMFILE"] ||= gemfile
+                        - activate_bundlerを呼ぶ
+            - activate_bundler
+                - エラーが存在しない場合にBundlerをリクエストする
+            - activation_error_handling
+        - m.load_bundler!
+            - 上記で定義したモジュールmを読み込む
+        - m.invoked_as_script?がtrueの場合には
+            - load Gem.bin_path("bundler", "bundle")
+                - を実行する
     - railsファイル
         - railsコマンドを実行できるようにcommandを呼び込んでいるファイル
+            - load File.expand_path("spring", __dir__)
+                - apringを文字列として渡してファイルを生成する
+            - APP_PATH = File.expand_path('../config/application', __dir__)
+                - APP_PATHを定義する
+            - require_relative "../config/boot"
+                - bootを呼び込む
+            - require "rails/commands"
+                - railsコマンドを読み込む
     - rakeファイル
         - Rails5以降bin/railsに統合された
             - DB周りのコマンドを実行するスクリプトを記載するファイル
+                - load File.expand_path("spring", __dir__)
+                    - apringを文字列として渡してファイルを生成する
+                - require_relative "../config/boot"
+                    - bootファイルと関係せいを持ち呼び込む
+                - require "rake"
+                    - rakeを読み込む
+                - Rake.application.run
     - setupファイル
         - アプリケーションの初期設定時に設定を自動化するためのコードを格納するファイル
     - springファイル

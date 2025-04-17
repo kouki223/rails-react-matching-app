@@ -172,8 +172,19 @@
                     - chat_room_users
                     - chat_rooms
                         - chat_room_usersを通じて取得する
-                    - messages
+                    - messagesモデル
     - uploadersディレクトリ
-        - 画像をアップロードする機能を実装する
+        - 画像等をアップロードする機能を実装する
+            - ImageUploaderクラス
+                - storage => file
+                    - デフォルトで画像の保存先にはpublicディレクトリが指定される
+                - store_dirアクション
+                    - 画像のuplodする時に保存されるファイルのパス名
+                - extension_allowlist => %w => 配列を作成する
     - viewsディレクトリ
         - Viewファイルを格納するディレクトリ
+            - mailer.html.erb
+                - ウェルカム時に表示する
+            - mailer.text.erb
+                - html.erbで記載したテキストバージョンを保存する事ができる
+                    - htmlが表示できない場合のフォールバックとしてベストプラクティス
