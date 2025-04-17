@@ -121,14 +121,58 @@
     - modelsディレクトリ
         - modelが格納されているディレクトリ
             - ApplicationRecordモデル
-                - ApplicationRecordはORMとしてDBへのマッピングを
-                - self.abstract_class = true
-                    - 対応するテーブルが
+                - ApplicationRecordはORMとしてDBへのマッピングを行う
+                    - self.abstract_class = true
+                        - 対応するテーブルが対象のモデルにない場合に継承されるクラスのモデルに対して操作をする事を示す
             - ChatRoomUserモデル
+                - 関係性を示す
+                    - 宣言をしたモデルは他方のモデルに従属する
+                        - 宣言を行った側のインスタンスは関連づけされたモデルに従属するようになる
+                    - belongs_to => 単数形で指定
+                        - chat_room
+                        - user
             - ChatRoomモデル
+                - has_many => 複数形で指定
+                    - 指定したモデルのインスタンスを複数持つようになる
+                        - chat_room_users
+                        - usersを指定するが、中間テーブルであるchat_room_usersを介して指定する
+                        - messages
             - Likeモデル
+                - belongs_to
+                    - to_user
+                        - 外部キー　＝＞　to_user_id
+                    - from_user
+                        - 外部キー　＝＞　from_user_id
             - messageモデル
+                - belongs_to
+                    - chat_room
+                    - user
             - userモデル
+                - devise
+                    - database_authenticatable
+                    - registerable
+                    - recoverable
+                    - rememberable
+                    - validatable
+                - DeviseTokenAuth::Concernsモジュールをincludeする
+                - ImageUploaderをマウントする
+                - has_many
+                    - likes_from
+                        - class_name => Like
+                        - 外部キー => from_user_id
+                        - dependent => destoty
+                    - likes_to
+                        - class_name => Like
+                        - 外部キー => to_user_id
+                        - dependent => destoty
+                    - active_likes
+                        - likes_fromを通してto_userを取得する
+                    - passive_likes
+                        - likes_toを通してfrom_userを取得する
+                    - chat_room_users
+                    - chat_rooms
+                        - chat_room_usersを通じて取得する
+                    - messages
     - uploadersディレクトリ
         - 画像をアップロードする機能を実装する
     - viewsディレクトリ
