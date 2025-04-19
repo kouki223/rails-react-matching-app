@@ -1,6 +1,83 @@
 - configディレクトリ
     - environmentsディレクトリ
         - Rails特有の固有環境の設定を記載するファイル
+            - コア部分の環境設定
+        - developmentファイル　＝＞　開発環境においての設定
+            - Rails.application.configure do
+                - config.cache_classes = false
+                    - 後方互換性のためのコード
+                - config.eager_load = false
+                    - メモリに事前にキャッシュする
+                        - falseなのでキャッシュしない
+                - config.consider_all_requests_local = true
+                    - 全てのエラーを表示する
+                - if文 => Rails.root.join('tmp', 'caching-dev.txt').exist?
+                    - config.cache_store = :memory_store
+                    - config.public_file_server.headers
+                        - 'Cache-Control' => "public, max-age=#{2.days.to_i}"
+                    - config.action_controller.perform_caching = false
+                    - config.cache_store = :null_store
+                - config.active_storage.service = :local
+                    - ローカルのストアファイルを更新する
+                - config.action_mailer.raise_delivery_errors = false
+                - config.action_mailer.perform_caching = false
+                    - mailerにおいてエラーが発生してもエラーの対応をしない
+                        - ローカル開発なので対応する必要ない
+                - config.active_support.deprecation = :log
+                    - 非推奨のactive_supportがあった場合logに出力する
+                - config.active_support.disallowed_deprecation = :raise
+                    - 
+                - config.active_support.disallowed_deprecation_warnings = []
+                    - warningsを配列で返すために[]Arrayリテラルを渡す
+                - config.active_record.migration_error = :page_load
+                    - migration_errorはpage_loadを指定してページに表示する
+                - config.active_record.verbose_query_logs = true
+                    - railsサーバーのログを追う事ができるようにする設定
+                - config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+                    - ファイルシステム上のファイル更新検出に使われるクラス
+                        - listenAPIに従う必要がある
+                            - listenというGemが参照される
+                - config.action_mailer.default_url_options = { host: 'localhost', port: 3001 }
+                    - mailerを使う際のデフォルトURLを指定する
+        - productionファイル　＝＞　プロダクト(本番環境)においての設定
+            - Rails.application.configure do
+                - config.cache_classes = true
+                    - 後方互換性のためのコードを有効にする
+                - config.eager_load = true
+                    - メモリに事前にキャッシュする
+                        - 開発環境なので有効にする
+                -  config.consider_all_requests_local = true
+                    - 全てのエラーを表示しない
+                        - 本番環境においてはエラーハンドリングを行い必要なエラーのみを表示するようにする
+                - config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+                    - 静的なファイルをpublicディレクトリから供給する
+                - config.active_storage.service = :local
+                    - ローカルのストアファイルを更新する
+                - config.log_level = :info
+                    - ログレベルを一般的な情報に指定する
+                - config.log_tags = [ :request_id ]
+                    - logのタグにはリクエストのidを指定する
+                - config.action_mailer.perform_caching = false
+                    - mailerにおいてエラーが発生してもエラーの対応をしない
+                        - ローカル開発なので対応する必要ない
+                            - 今回は本番環境だが、mailer機能を実装しないのでfalseを返す
+                - config.i18n.fallbacks = true
+                    - ロケールのフォールバック設定
+                        - バージョンによってはフォールバックによってエラーが発生する可能性がある
+                - config.active_support.deprecation = :notify
+                    - 非推奨のactive_supportがあった場合notifyに出力する
+                - config.active_support.disallowed_deprecation = :log
+                - onfig.active_support.disallowed_deprecation_warnings = []
+                - config.log_formatter = ::Logger::Formatter.new
+                - if文
+                    - logger
+                    - logger.formatter
+                    - config.logger
+                        - これらを定義する
+                - config.active_record.dump_schema_after_migration = false
+                    - migration後のdunmを禁止する
+                        - 現在のDBからDBスキーマを生成する
+        - testファイル
     - initializersディレクトリ
         - フレームワークやGemが読み込まれた後に実行するコードを格納するディレクトリ
     - localesディレクトリ
