@@ -1,10 +1,85 @@
 - db
     - fixture/users
         - usersを登録する場合に使う画像を格納する
+            - 色々、ユーザーの初期値となる画像が格納されている
     - migrate
         - migrateファイルを格納する場所
+            - devase_token_auth
+                - users table
+                    - t.string :provider
+                        - 認証機能をどのプロバイダーで実行するのかを指定する
+                            - :null => false
+                                - nullを許可しない
+                                    - 基本、認証機能を実装する時にNullという事はありえない想定になるため
+                            - :default => "email"
+                                - emailでの認証
+                    - t.string :uid, :null => false, :default => ""
+                        - ユーザーを一意に認識するための識別子を格納するカラム
+                            - :null => false
+                                    - nullを許可しない
+                                        - 基本、認証機能を実装する時にNullという事はありえない想定になるため
+                            - :default => ""
+                                - デフォルトは空文字
+                                    - レコードが作成された際に明示的に指定された場合に指定された値がカラムに入るようになる
+                    - Recoverable => 回復する
+                    - Rememberable => 回復した日付を記録する
+                    - Confirmable => トークンを発行したりするライブラリ
+                    - User Info => ユーザー情報
+                        - name
+                        - nickname
+                        - image
+                        - email
+                    - Tokens
+                    - timestamps => レコード作成時のTimestamp
+                - index
+                    - usersテーブル
+                        - email
+                        - uid
+                        - provider
+                        - reset_password_token
+                        - confirmation_token
+                            - unique: true
+                                - 重複した値を予防する事ができる
+                                    - 検索機能の向上
+                                    - カラムへの登録時に事前にエラーを吐いてくれる
+            - user
+                - gender => integer(整数)
+                    - null => false
+                        - nullを許可しない
+                            - 基本、認証機能を実装する時にNullという事はありえない想定になるため
+                    - default: 0
+                        - デフォルトは0
+                    - after: :nickname
+                        - genderの後にはnicknameが来るように設定する
+            - likes
+                - from_user_id
+                - to_user_id
+                    - integer型 => 整数
+                    - null: false => 値がnullを許容しない
+            - chat_rooms
+                - timestampsのみ
+            - chet_room_users
+                - chat_room_id
+                - user_id
+                    - integer型 => 整数
+                    - null: false => 値がnullを許容しない
+            - messages
+                - chat_room_id
+                    - integer型 => 整数
+                    - null: false => 値がnullを許容しない
+                - user_id
+                    - integer型 => 整数
+                    - null: false => 値がnullを許容しない
+                - content
+                    - string => 文字列
+                    - null: false => 値がnullを許容しない
     - schema
         - DBへの変更スキーマーを記録するファイル
+            - maigrationファイルに沿ってDBへ各Tableが作成される
     - seeds
         - 種という意味のseed
             - DB構造などの開発段階での初期設定
+                - テストユーザーのレコード
+                    - 1~7のユーザー
+                - putsで始まる文字列
+                    - タスク実行時に吐き出されるスキーマーを記載する
